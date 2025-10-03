@@ -1,123 +1,74 @@
 import streamlit as st
 import random
 
-def generate_arithmetic_sequence(start, diff, length):
-    """시작 숫자, 공차(차이), 길이를 이용해 등차수열을 생성합니다. (양수 공차만 사용)"""
-    # diff는 무조건 양수이므로 '커지는' 패턴만 생성됨
-    sequence = [start + i * diff for i in range(length)]
-    return sequence
-
-def generate_geometric_sequence(start, ratio, length):
-    """시작 숫자, 공비(비율), 길이를 이용해 등비수열을 생성합니다. (양수 공비만 사용)"""
-    sequence = []
-    current = start
+# 미리 정의된 고정 수열 목록 (총 10개)
+# 형식: {
+#   '문제 ID': {
+#       'sequence': [수열 값], 
+#       'blank_index': 정답(빈칸)의 인덱스, 
+#       'type': 'arithmetic' 또는 'geometric',
+#       'diff_ratio': 공차/공비 값,
+#       'rule_desc': "규칙 설명"
+#   }
+# }
+FIXED_SEQUENCES = {
+    # 덧셈 (+1, +5, +10) - 5개
+    'A1': {'sequence': [10, 11, 12, 13, 14, 15], 'blank_index': 3, 'type': 'arithmetic', 'diff_ratio': 1, 'rule_desc': "1씩 커지는 (더하기) 패턴"},
+    'A2': {'sequence': [5, 10, 15, 20, 25, 30], 'blank_index': 2, 'type': 'arithmetic', 'diff_ratio': 5, 'rule_desc': "5씩 커지는 (더하기) 패턴"},
+    'A3': {'sequence': [100, 110, 120, 130, 140, 150], 'blank_index': 4, 'type': 'arithmetic', 'diff_ratio': 10, 'rule_desc': "10씩 커지는 (더하기) 패턴"},
+    'A4': {'sequence': [23, 25, 27, 29, 31], 'blank_index': 2, 'type': 'arithmetic', 'diff_ratio': 2, 'rule_desc': "2씩 커지는 (더하기) 패턴"},
+    'A5': {'sequence': [7, 17, 27, 37, 47, 57], 'blank_index': 3, 'type': 'arithmetic', 'diff_ratio': 10, 'rule_desc': "10씩 커지는 (더하기) 패턴"},
     
-    # 초등학생 수준에 맞게 최대값 제한을 엄격하게 유지
-    max_value = 5000 
-    
-    for _ in range(length):
-        current_int = int(current)
-        
-        # 결과가 너무 커지면 중단 (음수 체크 불필요)
-        if current_int > max_value:
-             return [] 
-        
-        # 0 또는 음수 시작 방지
-        if current_int <= 0:
-            return []
-            
-        sequence.append(current_int)
-        current *= ratio
-            
-    # 최소 길이를 만족하는지 확인
-    if len(sequence) < 4:
-        return []
-        
-    return sequence
+    # 곱셈 (x2, x4, x5) - 5개
+    'G1': {'sequence': [2, 4, 8, 16, 32], 'blank_index': 3, 'type': 'geometric', 'diff_ratio': 2, 'rule_desc': "2씩 곱하는 패턴"},
+    'G2': {'sequence': [3, 15, 75, 375, 1875], 'blank_index': 2, 'type': 'geometric', 'diff_ratio': 5, 'rule_desc': "5씩 곱하는 패턴"},
+    'G3': {'sequence': [1, 4, 16, 64, 256], 'blank_index': 3, 'type': 'geometric', 'diff_ratio': 4, 'rule_desc': "4씩 곱하는 패턴"},
+    'G4': {'sequence': [5, 10, 20, 40, 80], 'blank_index': 4, 'type': 'geometric', 'diff_ratio': 2, 'rule_desc': "2씩 곱하는 패턴"},
+    'G5': {'sequence': [4, 20, 100, 500, 2500], 'blank_index': 3, 'type': 'geometric', 'diff_ratio': 5, 'rule_desc': "5씩 곱하는 패턴"},
+}
 
 def start_new_question():
-    """새로운 문제 생성 및 상태 저장을 위한 헬퍼 함수"""
+    """미리 정의된 수열 중 하나를 선택하여 새로운 문제를 생성하고 상태를 저장합니다."""
     
-    last_pattern_rule = st.session_state.get('last_pattern_rule', None)
+    # 사용된 질문 목록 초기화
+    if 'used_questions' not in st.session_state:
+        st.session_state.used_questions = set()
 
-    # 1. 패턴 타입 선택 (등차 vs 등비)
-    pattern_choices = ['arithmetic', 'geometric']
-    pattern_type = random.choice(pattern_choices)
-
-    if pattern_type == 'arithmetic':
-        
-        # 요청하신 덧셈 규칙만 사용 (2, 5, 10)
-        difference_candidates = [2, 5, 10]
-        
-        # 규칙 중복 방지
-        if last_pattern_rule and last_pattern_rule['type'] == 'arithmetic':
-            prev_diff = last_pattern_rule['rule_value']
-            difference_candidates = [d for d in difference_candidates if d != prev_diff]
-            
-            if not difference_candidates:
-                difference_candidates = [2, 5, 10] # 2, 5, 10이 모두 사용됐다면 다시 선택
-        
-        start_num = random.randint(1, 100)
-        difference = random.choice(difference_candidates)
-        sequence_length = random.randint(5, 7)
-        
-        full_sequence = generate_arithmetic_sequence(start_num, difference, sequence_length)
-        pattern_rule_desc = f"{difference}씩 커지는 (더하기) 패턴"
-        
-        # 유효하지 않은(너무 짧은) 수열 방지 (재시도)
-        while len(full_sequence) < 5:
-            start_num = random.randint(1, 100)
-            difference = random.choice(difference_candidates)
-            full_sequence = generate_arithmetic_sequence(start_num, difference, sequence_length)
-            
-        new_pattern_rule = {'type': 'arithmetic', 'rule_value': difference}
-        
-    else: # geometric (곱하기 규칙)
-        
-        # 요청하신 곱셈 규칙만 사용 (2, 4, 5)
-        ratio_candidates = [2, 4, 5]
-        
-        # 규칙 중복 방지
-        if last_pattern_rule and last_pattern_rule['type'] == 'geometric':
-            prev_ratio = last_pattern_rule['rule_value']
-            ratio_candidates = [r for r in ratio_candidates if r != prev_ratio]
-            
-            if not ratio_candidates:
-                 ratio_candidates = [2, 4, 5] # 2, 4, 5가 모두 사용됐다면 다시 선택
-        
-        start_num = random.randint(1, 10)
-        ratio = random.choice(ratio_candidates)
-        sequence_length = random.randint(4, 6)
-        
-        full_sequence = []
-        # 유효한 수열이 생성될 때까지 반복
-        while len(full_sequence) < 4:
-            full_sequence = generate_geometric_sequence(start_num, ratio, sequence_length)
-            if len(full_sequence) < 4: # 생성 실패 (숫자가 너무 커지거나 짧아짐) 시 다시 시도
-                start_num = random.randint(1, 10)
-        
-        pattern_rule_desc = f"{ratio}씩 곱하는 패턴"
-        new_pattern_rule = {'type': 'geometric', 'rule_value': ratio}
-
-
-    # 빈칸 위치를 무작위로 선택
-    blank_index = random.randint(2, len(full_sequence) - 2)
+    # 사용 가능한 질문 목록
+    available_q_ids = list(FIXED_SEQUENCES.keys() - st.session_state.used_questions)
     
-    # 상태 저장
+    # 1. 문제 선택
+    if not available_q_ids:
+        # 모든 문제를 다 풀었을 경우 (재시작 또는 오류 방지)
+        st.session_state.game_state = 'complete' 
+        st.error("모든 문제가 소진되었습니다. 게임을 다시 시작해 주세요!")
+        return
+        
+    question_id = random.choice(available_q_ids)
+    q_data = FIXED_SEQUENCES[question_id]
+    
+    # 2. 상태 업데이트
+    full_sequence = q_data['sequence']
+    blank_index = q_data['blank_index']
+    
+    # 사용된 질문 목록에 추가
+    st.session_state.used_questions.add(question_id)
+    
+    # 3. 상태 저장
     st.session_state.correct_answer = full_sequence[blank_index]
-    st.session_state.pattern_type = pattern_type
-    st.session_state.last_pattern_rule = new_pattern_rule
+    st.session_state.pattern_type = q_data['type']
+    
+    # 마지막 규칙 정보 저장 (규칙 중복 방지 로직은 삭제, 전체 문제 중복 방지 로직으로 대체)
+    st.session_state.last_pattern_rule = {'type': q_data['type'], 'rule_value': q_data['diff_ratio']}
     
     display_sequence = list(map(str, full_sequence))
     display_sequence[blank_index] = '?'
     st.session_state.display_sequence_str = " → ".join(display_sequence) 
     st.session_state.full_sequence_str = " → ".join(map(str, full_sequence))
-    st.session_state.pattern_rule = pattern_rule_desc
+    st.session_state.pattern_rule = q_data['rule_desc']
     
     st.session_state.game_state = 'playing'
     st.session_state.feedback = ""
-    
-    # 입력 필드 초기화를 위해 키 값 변경
     st.session_state.input_key = random.random()
 
 def pattern_robot_web_game():
@@ -125,7 +76,7 @@ def pattern_robot_web_game():
     
     # --- 제목 및 설명 ---
     st.title("🤖 뿅뿅! 숫자 패턴 로봇 🤖 ")
-    st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다! **더하기(2, 5, 10)와 곱하기(2, 4, 5)** 규칙이 숨어있어요.")
+    st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다!")
     st.markdown("---")
     
     # 1. 게임 상태 관리 및 초기화
@@ -135,6 +86,7 @@ def pattern_robot_web_game():
         st.session_state.target_score = 3
         st.session_state.input_key = 0 
         st.session_state.last_pattern_rule = None 
+        # used_questions 상태는 start_new_question에서 초기화됨
         start_new_question() 
         st.rerun()
 
@@ -154,6 +106,7 @@ def pattern_robot_web_game():
             st.session_state.game_state = 'init'
             st.session_state.score = 0
             st.session_state.last_pattern_rule = None 
+            st.session_state.used_questions = set() # 사용된 문제 초기화
             start_new_question()
             st.rerun()
         
@@ -216,9 +169,14 @@ def pattern_robot_web_game():
         
         # 새로운 문제 시작 버튼 표시
         st.markdown("---")
-        if st.button("✨ 다음 문제 시작", key="new_game_finished_button"):
-            start_new_question()
-            st.rerun()
+        # 사용 가능한 문제가 남아있는지 확인
+        if len(st.session_state.used_questions) < len(FIXED_SEQUENCES):
+             if st.button("✨ 다음 문제 시작", key="new_game_finished_button"):
+                start_new_question()
+                st.rerun()
+        else:
+            st.warning("모든 문제가 소진되었습니다. '게임 처음부터 다시 시작' 버튼을 눌러주세요.")
+
 
     # --- 점수판 표시 ---
     st.markdown("---")
