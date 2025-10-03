@@ -33,56 +33,104 @@ def calculate_price(size, colors):
     return price, total_bonus
 
 def generate_step_data(step):
-    """단계별로 필요한 예시 데이터와 문제 데이터를 생성합니다."""
+    """단계별로 필요한 예시 데이터와 문제 데이터를 생성합니다. (예시와 문제의 크기 점수가 겹치지 않도록 수정)"""
     
     examples = []
+    
+    # 0. 문제 size 후보군 정의 (1~10 사이)
+    all_possible_sizes = set(range(1, 11))
     
     if step == 1:
         # 목표: SCALE_FACTOR (크기 가중치)와 빨강 보너스 찾기
         required_color = '🔴 빨강'
-        sizes = random.sample(range(4, 10), 3)
-        for size in sizes:
+        
+        # 3개의 예시 size를 4~10 중에서 선택
+        example_sizes = random.sample(range(4, 11), 3) 
+        for size in example_sizes:
             price, _ = calculate_price(size, required_color)
             examples.append({'size': size, 'color': required_color, 'price': price})
         
-        problem_size = random.choice([2, 10])
+        # 문제 size는 예시 size와 겹치지 않는 범위에서 선택 (1~10 사이)
+        problem_size_candidates = list(all_possible_sizes - set(example_sizes)) 
+        
+        if problem_size_candidates:
+            problem_size = random.choice(problem_size_candidates)
+        else:
+            # 예외 상황 대비 (4~10 중 3개를 이미 썼으므로, 1~3은 항상 남음)
+            problem_size = random.choice(list(all_possible_sizes)) 
+
         problem_color = required_color
         step_hint = "빨간색 물건들만 보고 **'크기 점수 가중치'**와 **'빨강 보너스'**를 찾아내세요."
         
     elif step == 2:
         # 목표: 노랑 보너스 찾기 
         required_color = '🟡 노랑'
+        
+        # 예시 size 후보군: 7, 5
+        example_sizes = [7, 5]
+        
         examples.append({'size': 7, 'color': '🔴 빨강', 'price': calculate_price(7, '🔴 빨강')[0]})
         examples.append({'size': 7, 'color': '🟡 노랑', 'price': calculate_price(7, '🟡 노랑')[0]})
         examples.append({'size': 5, 'color': '🔴 빨강', 'price': calculate_price(5, '🔴 빨강')[0]})
-
-        problem_size = random.randint(4, 9)
+        
+        # 문제 size는 4~9 중에서 예시 size와 겹치지 않게 선택
+        size_range = set(range(4, 10)) # 4, 5, 6, 7, 8, 9
+        problem_size_candidates = list(size_range - set(example_sizes)) # 4, 6, 8, 9
+        
+        if problem_size_candidates:
+            problem_size = random.choice(problem_size_candidates)
+        else:
+            problem_size = random.choice(list(size_range)) # 안전 장치
+            
         problem_color = required_color
         step_hint = f"크기 가중치({SCALE_FACTOR}원)와 빨강 보너스를 이용해 **'노랑 보너스'**를 찾아내세요."
 
     elif step == 3:
         # 목표: 파랑 보너스 찾기
         required_color = '🔵 파랑'
+        
+        # 예시 size 후보군: 8, 6
+        example_sizes = [8, 6]
+        
         examples.append({'size': 8, 'color': '🔴 빨강', 'price': calculate_price(8, '🔴 빨강')[0]})
         examples.append({'size': 8, 'color': '🟡 노랑', 'price': calculate_price(8, '🟡 노랑')[0]})
         examples.append({'size': 6, 'color': '🔵 파랑', 'price': calculate_price(6, '🔵 파랑')[0]})
+        
+        # 문제 size는 3~10 중에서 예시 size와 겹치지 않게 선택
+        size_range = set(range(3, 11)) # 3, 4, 5, 6, 7, 8, 9, 10
+        problem_size_candidates = list(size_range - set(example_sizes)) # 3, 4, 5, 7, 9, 10
+        
+        if problem_size_candidates:
+            problem_size = random.choice(problem_size_candidates)
+        else:
+            problem_size = random.choice(list(size_range)) # 안전 장치
 
-        problem_size = random.randint(3, 10)
         problem_color = required_color
         step_hint = "크기 가중치와 이미 알고 있는 색깔 보너스를 활용해 **'파랑 보너스'**를 찾아내세요."
         
     elif step == 4:
         # 목표: 두 가지 색깔 혼합 문제 (최종 점검)
         
-        # 3가지 색깔의 예시 모두 제시
+        # 예시 size 후보군: 7
+        example_sizes = [7] 
+        
+        # 3가지 색깔의 예시 모두 제시 (모두 크기 7)
         all_colors = REQUIRED_COLORS
         for color in all_colors:
              examples.append({'size': 7, 'color': color, 'price': calculate_price(7, color)[0]})
         
+        # 문제 size는 4~9 중에서 예시 size와 겹치지 않게 선택
+        size_range = set(range(4, 10)) # 4, 5, 6, 7, 8, 9
+        problem_size_candidates = list(size_range - set(example_sizes)) # 4, 5, 6, 8, 9
+        
+        if problem_size_candidates:
+            problem_size = random.choice(problem_size_candidates)
+        else:
+            problem_size = random.choice(list(size_range)) # 안전 장치
+
         # 문제: 두 가지 색깔을 무작위로 선택하여 혼합
         mixed_colors = random.sample(REQUIRED_COLORS, 2)
         
-        problem_size = random.randint(4, 9)
         problem_color = mixed_colors # 이제 problem_color는 리스트가 됨
         
         step_hint = "모든 색깔의 보너스를 합하고 크기 가중치를 적용하여, **두 가지 색깔이 혼합된 물건**의 가격을 예측하세요!"
@@ -136,7 +184,7 @@ def price_prediction_game():
         st.session_state.step = 1
         st.session_state.target_score = TARGET_SCORE
         start_new_question() 
-        st.rerun()
+        # st.rerun() # 초기화 후 바로 실행할 필요는 없음
 
     # '다시 시작' 버튼 로직 (승리 후)
     if st.session_state.game_state == 'victory' and st.button("🔄 게임 처음부터 다시 시작", key="reset_game"): 
@@ -147,14 +195,13 @@ def price_prediction_game():
         st.rerun()
 
     # --- 훈련 데이터 (예시) 표시 ---
-    if st.session_state.game_state in ['playing', 'checking', 'finished']:
-        st.subheader(f"🧠 **Step {st.session_state.step}**: 규칙 유추 훈련")
+    if st.session_state.game_state in ['playing', 'checking', 'finished', 'init']:
+        st.subheader(f"🧠 **Step {min(st.session_state.step, TARGET_SCORE)}** (현재 단계): 규칙 유추 훈련")
         
         # 예시 데이터 테이블로 표시
         data = {
             "물건": [f"예시 {i+1}" for i in range(len(st.session_state.examples))],
             "크기 점수 (x)": [ex['size'] for ex in st.session_state.examples],
-            # Step 4에서는 색깔이 3개 모두 나오므로, 예측에 필요한 모든 정보가 들어있음
             "색깔": [ex['color'] for ex in st.session_state.examples],
             "가격 (y)": [f"{ex['price']:,}원" for ex in st.session_state.examples]
         }
@@ -187,10 +234,13 @@ def price_prediction_game():
         
         # 정답 제출 버튼
         if st.button("🚀 정답 제출"):
-            if user_guess is not None:
+            # 입력이 빈 값일 때를 대비하여 체크
+            if user_guess is not None and user_guess >= 0:
                 st.session_state.user_guess = user_guess
                 st.session_state.game_state = 'checking'
                 st.rerun() 
+            else:
+                 st.error("가격을 입력해 주세요!")
 
     # --- 피드백 처리 및 표시 ---
     if st.session_state.game_state == 'checking':
@@ -213,16 +263,16 @@ def price_prediction_game():
         # 피드백 내용 구성 (정답 규칙 상세 표시)
         bonus_detail = []
         if isinstance(st.session_state.problem_color, list):
-            # Step 4의 경우
+            # Step 4의 경우 (혼합 색상)
             for color in st.session_state.problem_color:
                  bonus_detail.append(f"({color} {COLOR_BONUS.get(color, 0):,}원)")
             bonus_str = ' + '.join(bonus_detail)
         else:
-             # Step 1, 2, 3의 경우
+             # Step 1, 2, 3의 경우 (단일 색상)
             bonus_str = f"({st.session_state.display_color} {total_bonus:,}원)"
         
         feedback_text = st.session_state.feedback
-        feedback_text += f"\n\n**✅ 정답 공식**: 가격 = ({st.session_state.problem_size} x {SCALE_FACTOR}원) + {bonus_str}"
+        feedback_text += f"\n\n**✅ 정답 공식**: 가격 = ({st.session_state.problem_size} x {SCALE_FACTOR}원) + {bonus_str} = {st.session_state.correct_answer:,}원"
         
         # 피드백 표시
         if st.session_state.feedback_type == 'success':
@@ -253,12 +303,12 @@ def price_prediction_game():
     if st.session_state.game_state == 'victory':
         st.success("🏆🏆🏆 게임 승리! 🏆🏆🏆")
         st.header(f"🎉 축하합니다! 모든 가격 규칙을 성공적으로 학습했어요!")
-        st.markdown("게임을 다시 시작하려면 위에 있는 **'게임 처음부터 다시 시작'** 버튼을 눌러주세요.")
-
+        # '게임 처음부터 다시 시작' 버튼은 위에 있음
 
     # --- 점수판 표시 ---
     st.markdown("---")
-    st.info(f"🏆 **현재 단계:** Step {min(st.session_state.step, TARGET_SCORE)} / {TARGET_SCORE}")
+    current_step_display = min(st.session_state.step, TARGET_SCORE)
+    st.info(f"🏆 **현재 단계:** Step {current_step_display} / {TARGET_SCORE} (정답 {st.session_state.score}개)")
 
 if __name__ == "__main__":
     price_prediction_game()
