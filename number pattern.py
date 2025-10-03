@@ -61,7 +61,7 @@ def start_new_question():
         sequence_length = random.randint(5, 7)
         
         full_sequence = generate_arithmetic_sequence(start_num, difference, sequence_length)
-        pattern_rule_desc = f"{abs(difference)}씩 {'커지는' if difference > 0 else '작아지는'} (더하기/빼기) 패턴"
+        pattern_rule_desc = f"{abs(difference)}씩 {'커지는' if difference > 0 else '작아지는'} (더하기) 패턴"
         
         # 유효하지 않은(너무 짧은) 수열 방지
         while len(full_sequence) < 5:
@@ -155,7 +155,7 @@ def pattern_robot_web_game():
         st.balloons()
         st.success("🏆🏆🏆 게임 승리! 🏆🏆🏆")
         st.header(f"🎉 축하합니다! 목표인 {st.session_state.target_score}문제를 모두 맞혔어요!")
-        st.markdown("게임을 다시 시작하려면 위에 있는 **'게임 처음부터 다시 시작'** 버튼을 눌러주세요.")
+        st.markdown("게임을 다시 시작하려면 위에 있는 '게임 처음부터 다시 시작' 버튼을 눌러주세요.")
         st.markdown("---")
         st.info(f"🏆 **최종 점수:** {st.session_state.score} / {st.session_state.target_score}점")
         return # 승리 상태에서는 문제 표시를 건너뜀
@@ -230,4 +230,5 @@ def pattern_robot_web_game():
 
 if __name__ == "__main__":
     pattern_robot_web_game()
+
 
