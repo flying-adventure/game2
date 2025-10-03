@@ -190,6 +190,13 @@ def pattern_robot_web_game():
     if st.session_state.game_state == 'victory':
         st.success("🏆🏆🏆 게임 승리! 🏆🏆🏆")
         st.header(f"🎉 축하합니다! 목표인 {st.session_state.target_score}문제를 모두 맞혔어요!")
+        
+        # 힌트 문구 추가 (요청 사항 반영)
+        st.warning("""
+        **💡 힌트 문장:** 붉은 용암빛이 성문의 돌 틈새로 새어 나온다.
+        \n(이 문장을 메모장 등에 기록해두세요!)
+        """)
+        
         st.markdown("게임을 다시 시작하려면 위에 있는 **'게임 처음부터 다시 시작'** 버튼을 눌러주세요.")
 
 
