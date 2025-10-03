@@ -33,7 +33,7 @@ def calculate_price(size, colors):
     return price, total_bonus
 
 def generate_step_data(step):
-    """단계별로 필요한 예시 데이터와 문제 데이터를 생성합니다. (예시와 문제의 크기 점수가 겹치지 않도록 수정)"""
+    """단계별로 필요한 예시 데이터와 문제 데이터를 생성합니다."""
     
     examples = []
     
@@ -184,7 +184,6 @@ def price_prediction_game():
         st.session_state.step = 1
         st.session_state.target_score = TARGET_SCORE
         start_new_question() 
-        # st.rerun() # 초기화 후 바로 실행할 필요는 없음
 
     # '다시 시작' 버튼 로직 (승리 후)
     if st.session_state.game_state == 'victory' and st.button("🔄 게임 처음부터 다시 시작", key="reset_game"): 
@@ -269,7 +268,7 @@ def price_prediction_game():
             bonus_str = ' + '.join(bonus_detail)
         else:
              # Step 1, 2, 3의 경우 (단일 색상)
-            bonus_str = f"({st.session_state.display_color} {total_bonus:,}원)"
+             bonus_str = f"({st.session_state.display_color} {total_bonus:,}원)"
         
         feedback_text = st.session_state.feedback
         feedback_text += f"\n\n**✅ 정답 공식**: 가격 = ({st.session_state.problem_size} x {SCALE_FACTOR}원) + {bonus_str} = {st.session_state.correct_answer:,}원"
@@ -303,7 +302,13 @@ def price_prediction_game():
     if st.session_state.game_state == 'victory':
         st.success("🏆🏆🏆 게임 승리! 🏆🏆🏆")
         st.header(f"🎉 축하합니다! 모든 가격 규칙을 성공적으로 학습했어요!")
-        # '게임 처음부터 다시 시작' 버튼은 위에 있음
+        
+        # 힌트 문구 추가 (요청 사항 반영)
+        st.warning("""
+        **💡 힌트 문장:** 다른 성과 달리 지붕이 검은 철판으로 덮여 있다.
+        \n(이 문장을 메모장 등에 기록해두세요!)
+        """)
+
 
     # --- 점수판 표시 ---
     st.markdown("---")
