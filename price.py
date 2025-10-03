@@ -185,13 +185,31 @@ def price_prediction_game():
         st.session_state.target_score = TARGET_SCORE
         start_new_question() 
 
-    # '다시 시작' 버튼 로직 (승리 후)
-    if st.session_state.game_state == 'victory' and st.button("🔄 게임 처음부터 다시 시작", key="reset_game"): 
-        st.session_state.game_state = 'init'
-        st.session_state.score = 0
-        st.session_state.step = 1
-        start_new_question()
-        st.rerun()
+    # --- 승리 화면 (통합된 로직) ---
+    if st.session_state.game_state == 'victory':
+        st.success("🏆🏆🏆 게임 승리! 🏆🏆🏆")
+        st.header(f"🎉 축하합니다! 모든 가격 규칙을 성공적으로 학습했어요!")
+
+        # 힌트 문구 출력 (가장 명확하게 보이도록 배치)
+        st.warning("""
+        **💡 힌트 문장:** 다른 성과 달리 지붕이 검은 철판으로 덮여 있다.
+        """)
+
+        st.markdown(f"(이 문장을 메모장 등에 기록해두세요!)")
+        
+        # '게임 처음부터 다시 시작' 버튼을 이 블록 안에 위치시켜 렌더링을 보장합니다.
+        if st.button("🔄 게임 처음부터 다시 시작", key="reset_game_victory"): 
+            st.session_state.game_state = 'init'
+            st.session_state.score = 0
+            st.session_state.step = 1
+            start_new_question()
+            st.rerun()
+
+        st.markdown("게임을 다시 시작하려면 위에 있는 **'게임 처음부터 다시 시작'** 버튼을 눌러주세요.")
+        st.markdown("---")
+        st.info(f"🏆 **최종 점수:** {st.session_state.score} / {st.session_state.target_score}점")
+        return # 승리 화면이 출력되면 나머지 코드는 실행하지 않음
+
 
     # --- 훈련 데이터 (예시) 표시 ---
     if st.session_state.game_state in ['playing', 'checking', 'finished', 'init']:
@@ -297,18 +315,6 @@ def price_prediction_game():
             if st.button(f"✨ {button_label}", key="next_step_button"):
                 start_new_question()
                 st.rerun()
-
-    # --- 승리 화면 ---
-    if st.session_state.game_state == 'victory':
-        st.success("🏆🏆🏆 게임 승리! 🏆🏆🏆")
-        st.header(f"🎉 축하합니다! 모든 가격 규칙을 성공적으로 학습했어요!")
-        
-        # 힌트 문구 추가 (요청 사항 반영)
-        st.warning("""
-        **💡 힌트 문장:** 다른 성과 달리 지붕이 검은 철판으로 덮여 있다.
-        \n(이 문장을 메모장 등에 기록해두세요!)
-        """)
-
 
     # --- 점수판 표시 ---
     st.markdown("---")
