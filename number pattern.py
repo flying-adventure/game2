@@ -44,7 +44,7 @@ def start_new_question():
 
     if pattern_type == 'arithmetic':
         
-        difference_candidates = [1, 2, 3, 5, 10, 15, -1, -2, -5, -10]
+        difference_candidates = [1, 2, 3, 5, 10, 15]
         
         # 이전 규칙이 등차수열이었고, 공차가 동일한 경우 제외
         if last_pattern_rule and last_pattern_rule['type'] == 'arithmetic':
@@ -126,8 +126,8 @@ def pattern_robot_web_game():
     st.set_page_config(layout="centered")
     
     # --- 제목 및 설명 ---
-    st.title("🤖 뿅뿅! 숫자 패턴 로봇 (난이도 UP! ⬆️)")
-    st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다! 더하기/빼기 외에 **곱하기 규칙**도 숨어있어요.")
+    st.title("🤖 뿅뿅! 숫자 패턴 로봇 🤖 ")
+    st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다! 더하기와 곱하기 규칙이 숨어있어요.")
     st.markdown("---")
     
     # 1. 게임 상태 관리 및 초기화
@@ -230,3 +230,4 @@ def pattern_robot_web_game():
 
 if __name__ == "__main__":
     pattern_robot_web_game()
+
