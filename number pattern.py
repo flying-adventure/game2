@@ -28,7 +28,7 @@ def start_new_question():
     if pattern_type == 'arithmetic':
         # 난이도 상향: 시작 숫자의 범위를 넓힘, 공차에 큰 숫자 추가
         start_num = random.randint(1, 20)
-        difference = random.choice([1, 2, 3, 5, 10, -1, -2, -5]) 
+        difference = random.choice([1, 2, 5, 10]) 
         sequence_length = random.randint(5, 7)
         full_sequence = generate_arithmetic_sequence(start_num, difference, sequence_length)
         pattern_rule = f"{abs(difference)}씩 {'커지는' if difference > 0 else '작아지는'} (더하기/빼기) 패턴"
@@ -74,8 +74,8 @@ def pattern_robot_web_game():
     st.set_page_config(layout="centered")
     
     # --- 제목 및 설명 ---
-    st.title("🤖 뿅뿅! 숫자 패턴 로봇 (난이도 UP! ⬆️)")
-    st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다! 더하기/빼기 외에 **곱하기 규칙**도 숨어있어요.")
+    st.title("🤖 뿅뿅! 숫자 패턴 로봇")
+    st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다! 더하기와 곱하기 규칙이 숨어있어요.")
     st.markdown("---")
     
     # 1. 게임 상태 관리 및 초기화
@@ -170,4 +170,5 @@ def pattern_robot_web_game():
     st.info(f"🏆 **현재 점수:** {st.session_state.score} / {st.session_state.target_score}점")
 
 if __name__ == "__main__":
+
     pattern_robot_web_game()
