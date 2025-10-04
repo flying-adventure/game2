@@ -76,7 +76,7 @@ def pattern_robot_web_game():
     
     # --- 제목 및 설명 ---
     st.title("🤖 뿅뿅! 숫자 추론 AI 🤖 ")
-    st.markdown("#### 추론 능력을 길러줘!!")
+    st.markdown("#### AI의 추론 능력을 길러줘!!")
     
     st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다!")
     
@@ -101,7 +101,7 @@ def pattern_robot_web_game():
         
         # 힌트 문장 추가
         st.warning("""
-        **💡 힌트 문장:** 성벽 위에는 뾰족한 가시 장식이 빽빽하게 솟아 있다.
+        💡 힌트 문장: 성벽 위에는 뾰족한 가시 장식이 빽빽하게 솟아 있다.
         \n(이 문장을 메모장 등에 기록해두세요!)
         """)
         
@@ -114,7 +114,7 @@ def pattern_robot_web_game():
             st.rerun()
         
         st.markdown("---")
-        st.info(f"🏆 **최종 점수:** {st.session_state.score} / {st.session_state.target_score}점")
+        st.info(f"🏆 최종 점수: {st.session_state.score} / {st.session_state.target_score}점")
         return 
 
 
@@ -187,4 +187,5 @@ def pattern_robot_web_game():
 
 if __name__ == "__main__":
     pattern_robot_web_game()
+
 
