@@ -99,8 +99,10 @@ def pattern_robot_web_game():
     st.set_page_config(layout="centered")
     
     # --- 제목 및 설명 ---
-    st.title("☀️ 날씨 트렌드 예측 로봇 (패턴 찾기)")
-    st.markdown(f"##### **과거 6일**의 날씨를 보고 다음 날씨를 예측하세요.  **{TARGET_SCORE}번** 정답을 맞히면 승리합니다.")
+    st.title("☀️ 날씨 트렌드 추론 AI ")
+    st.markdown(f"#### AI의 추론 능력을 길러주자! ")
+    
+    st.markdown(f"##### 과거 6일의 날씨를 보고 다음 날씨를 예측하세요.  {TARGET_SCORE}번 정답을 맞히면 승리합니다.")
     st.markdown("---")
     
     # 1. 게임 상태 관리 및 초기화
@@ -209,3 +211,4 @@ def pattern_robot_web_game():
 
 if __name__ == "__main__":
     pattern_robot_web_game()
+
