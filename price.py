@@ -174,7 +174,7 @@ def price_prediction_game():
     
     # --- 제목 및 설명 ---
     st.title("💰 가격 추론 훈련 AI (회귀 분석)")
-    st.markdown(f"####추론 능력을 길러줘!")
+    st.markdown(f"#### 추론 능력을 길러줘!")
     
     st.markdown(f"##### 단계별로 숨겨진 가격 규칙을 유추해 보세요. 총 {TARGET_SCORE}단계를 통과하면 승리합니다.")
     st.markdown("---")
@@ -325,4 +325,5 @@ def price_prediction_game():
 
 if __name__ == "__main__":
     price_prediction_game()
+
 
