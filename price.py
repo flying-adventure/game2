@@ -60,7 +60,7 @@ def generate_step_data(step):
             problem_size = random.choice(list(all_possible_sizes)) 
 
         problem_color = required_color
-        step_hint = "빨간색 물건들만 보고 **'크기 점수 가중치'**와 **'빨강 보너스'**를 찾아내세요."
+        step_hint = "빨간색 물건들만 보고 '크기 점수 가중치'와 '빨강 보너스'를 찾아내세요."
         
     elif step == 2:
         # 목표: 노랑 보너스 찾기 
@@ -83,7 +83,7 @@ def generate_step_data(step):
             problem_size = random.choice(list(size_range)) # 안전 장치
             
         problem_color = required_color
-        step_hint = f"크기 가중치({SCALE_FACTOR}원)와 빨강 보너스를 이용해 **'노랑 보너스'**를 찾아내세요."
+        step_hint = f"크기 가중치({SCALE_FACTOR}원)와 빨강 보너스를 이용해 '노랑 보너스'를 찾아내세요."
 
     elif step == 3:
         # 목표: 파랑 보너스 찾기
@@ -106,7 +106,7 @@ def generate_step_data(step):
             problem_size = random.choice(list(size_range)) # 안전 장치
 
         problem_color = required_color
-        step_hint = "크기 가중치와 이미 알고 있는 색깔 보너스를 활용해 **'파랑 보너스'**를 찾아내세요."
+        step_hint = "크기 가중치와 이미 알고 있는 색깔 보너스를 활용해 '파랑 보너스'를 찾아내세요."
         
     elif step == 4:
         # 목표: 두 가지 색깔 혼합 문제 (최종 점검)
@@ -133,7 +133,7 @@ def generate_step_data(step):
         
         problem_color = mixed_colors # 이제 problem_color는 리스트가 됨
         
-        step_hint = "모든 색깔의 보너스를 합하고 크기 가중치를 적용하여, **두 가지 색깔이 혼합된 물건**의 가격을 예측하세요!"
+        step_hint = "모든 색깔의 보너스를 합하고 크기 가중치를 적용하여, 두 가지 색깔이 혼합된 물건의 가격을 예측하세요!"
         
     else:
         return [], 0, "", 0, "오류: 게임 단계 초과"
@@ -173,8 +173,10 @@ def price_prediction_game():
     st.set_page_config(layout="centered")
     
     # --- 제목 및 설명 ---
-    st.title("💰 가격 예측 훈련 로봇 (회귀 분석)")
-    st.markdown(f"##### 단계별로 숨겨진 가격 규칙을 유추해 보세요. **총 {TARGET_SCORE}단계**를 통과하면 승리합니다.")
+    st.title("💰 가격 추론 훈련 AI (회귀 분석)")
+    st.markdown(f"####추론 능력을 길러줘!")
+    
+    st.markdown(f"##### 단계별로 숨겨진 가격 규칙을 유추해 보세요. 총 {TARGET_SCORE}단계를 통과하면 승리합니다.")
     st.markdown("---")
     
     # 1. 게임 상태 관리 및 초기화
@@ -323,3 +325,4 @@ def price_prediction_game():
 
 if __name__ == "__main__":
     price_prediction_game()
+
