@@ -75,8 +75,11 @@ def pattern_robot_web_game():
     st.set_page_config(layout="centered")
     
     # --- 제목 및 설명 ---
-    st.title("🤖 뿅뿅! 숫자 패턴 로봇 🤖 ")
+    st.title("🤖 뿅뿅! 숫자 추론 AI 🤖 ")
+    st.markdown("#### 추론 능력을 길러줘!!")
+    
     st.markdown("##### 3문제를 연속으로 맞히면 게임에서 승리합니다!")
+    
     st.markdown("---")
     
     # 1. 게임 상태 관리 및 초기화
@@ -184,3 +187,4 @@ def pattern_robot_web_game():
 
 if __name__ == "__main__":
     pattern_robot_web_game()
+
