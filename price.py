@@ -41,7 +41,7 @@ def generate_step_data(step):
         examples.append({'basket': 5, 'item': '❌ 없음', 'price': calculate_price(5)})
         examples.append({'basket': 5, 'item': '🍬 사탕', 'price': calculate_price(5, '🍬 사탕')})
         examples.append({'basket': 5, 'item': '🍫 초콜릿', 'price': calculate_price(5, '🍫 초콜릿')})
-        problem_size = 5
+        problem_size = 4
         problem_items = '🍬 사탕'
         answer = calculate_price(problem_size, problem_items)
         hint = "같은 바구니라도, 사탕이나 초콜릿이 들어가면 조금 더 비싸져요!"
@@ -169,3 +169,4 @@ def basket_game():
 # 실행
 if __name__ == "__main__":
     basket_game()
+
