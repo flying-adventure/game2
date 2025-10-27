@@ -41,7 +41,7 @@ def generate_step_data(step):
         examples.append({'size': 5, 'color': '⚪ (색 없음)', 'price': calculate_price(5)})
         examples.append({'size': 5, 'color': '🔴 빨강', 'price': calculate_price(5, '🔴 빨강')})
         examples.append({'size': 5, 'color': '🔵 파랑', 'price': calculate_price(5, '🔵 파랑')})
-        problem_size = 5
+        problem_size = 3
         problem_color = '🔴 빨강'
         problem_answer = calculate_price(problem_size, problem_color)
         hint = "색깔마다 가격이 달라요! 색깔 보너스 가격을 찾아보세요."
@@ -173,6 +173,7 @@ def price_prediction_game():
 # ===== 실행 =====
 if __name__ == "__main__":
     price_prediction_game()
+
 
 
 
