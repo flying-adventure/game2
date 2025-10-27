@@ -34,7 +34,7 @@ def generate_step_data(step):
         problem_size = 5
         problem_color = None
         problem_answer = calculate_price(problem_size)
-        hint = "크기만 커질수록 가격이 커져요. 크기 1당 100원이에요!"
+        hint = "크기가 커질수록 가격이 커져요. 크기 1당 가격을 맞춰볼까요?"
     
     elif step == 2:
         # 2단계: 색깔별 보너스 찾기
@@ -44,7 +44,7 @@ def generate_step_data(step):
         problem_size = 5
         problem_color = '🔴 빨강'
         problem_answer = calculate_price(problem_size, problem_color)
-        hint = "같은 크기인데 색깔마다 가격이 달라요! 색깔 보너스를 찾아보세요."
+        hint = "색깔마다 가격이 달라요! 색깔 보너스 가격을 찾아보세요."
     
     elif step == 3:
         # 3단계: 크기 + (빨강+파랑) 규칙 적용
@@ -173,4 +173,5 @@ def price_prediction_game():
 # ===== 실행 =====
 if __name__ == "__main__":
     price_prediction_game()
+
 
