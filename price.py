@@ -78,8 +78,8 @@ def price_prediction_game():
     st.set_page_config(layout="centered")
 
     # 제목
-    st.title("💰 가격의 비밀을 찾아라! (쉬운 버전)")
-    st.markdown("#### 크기와 색깔에 따라 가격이 달라지는 규칙을 찾아보세요!")
+    st.title("💰 가격의 비밀을 찾아라!")
+    st.markdown("#### 크기와 색깔에 따라 가격이 달라지는 규칙을 추론해보세요!")
     st.markdown(f"##### 총 {TARGET_SCORE}단계를 모두 맞히면 성공이에요!")
     st.markdown("---")
 
@@ -173,3 +173,4 @@ def price_prediction_game():
 # ===== 실행 =====
 if __name__ == "__main__":
     price_prediction_game()
+
