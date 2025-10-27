@@ -38,36 +38,47 @@ def generate_step_data(step):
             examples.append({'size': s, 'color': required_color, 'price': price})
         problem_size = random.choice([x for x in all_sizes if x not in example_sizes])
         problem_color = required_color
-        step_hint = "빨간색 물건만 보고 크기 가중치와 빨강 보너스를 유추하세요."
+        step_hint = "빨간색 물건만 보고 '크기 점수 가중치'와 '빨강 보너스'를 찾아내세요."
 
     elif step == 2:
-        # 노랑 보너스 추론
+        # 노랑 보너스 추론 (총 가격 제공)
         required_color = '🟡 노랑'
         size_yellow = 7
-        size_red = 7
-        size_ref = 5
-        red_price, _ = calculate_price(size_red, '🔴 빨강')
-        yellow_price, _ = calculate_price(size_yellow, '🟡 노랑')
-        ref_price, _ = calculate_price(size_ref, '🔴 빨강')
+        size_red1 = 7
+        size_red2 = 5
 
-        examples.append({'size': size_red, 'color': '🔴 빨강', 'price': f"{red_price:,}원"})
+        red1_price, _ = calculate_price(size_red1, '🔴 빨강')
+        yellow_price, _ = calculate_price(size_yellow, '🟡 노랑')
+        red2_price, _ = calculate_price(size_red2, '🔴 빨강')
+        total_price = red1_price + yellow_price + red2_price
+
+        examples.append({'size': size_red1, 'color': '🔴 빨강', 'price': f"{red1_price:,}원"})
         examples.append({'size': size_yellow, 'color': '🟡 노랑', 'price': "?"})
-        examples.append({'size': size_ref, 'color': '🔴 빨강', 'price': f"{ref_price:,}원"})
+        examples.append({'size': size_red2, 'color': '🔴 빨강', 'price': f"{red2_price:,}원"})
 
         problem_size = size_yellow
         problem_color = required_color
-        step_hint = "1단계의 결과(빨강 보너스, 가중치)를 이용해 노랑 보너스를 계산하세요."
+        step_hint = f"이 세 물건의 총 가격은 **{total_price:,}원** 입니다. 1단계에서 찾은 크기 가중치와 빨강 보너스를 이용해 노랑 보너스를 계산하세요."
 
     elif step == 3:
         # 파랑 보너스 추론
         required_color = '🔵 파랑'
-        example_sizes = [8, 6]
-        examples.append({'size': 8, 'color': '🔴 빨강', 'price': calculate_price(8, '🔴 빨강')[0]})
-        examples.append({'size': 8, 'color': '🔵 파랑', 'price': calculate_price(8, '🔵 파랑')[0]})
-        examples.append({'size': 6, 'color': '🔵 파랑', 'price': calculate_price(6, '🔵 파랑')[0]})
-        problem_size = random.choice([3, 4, 5, 7, 9, 10])
+        size_blue = 6
+        size_red = 6
+        size_yellow = 6
+
+        red_price, _ = calculate_price(size_red, '🔴 빨강')
+        yellow_price, _ = calculate_price(size_yellow, '🟡 노랑')
+        blue_price, _ = calculate_price(size_blue, '🔵 파랑')
+        total_price = red_price + yellow_price + blue_price
+
+        examples.append({'size': size_red, 'color': '🔴 빨강', 'price': f"{red_price:,}원"})
+        examples.append({'size': size_yellow, 'color': '🟡 노랑', 'price': f"{yellow_price:,}원"})
+        examples.append({'size': size_blue, 'color': '🔵 파랑', 'price': "?"})
+
+        problem_size = size_blue
         problem_color = required_color
-        step_hint = "이제 파랑 보너스를 찾아내세요. 모든 규칙이 완성됩니다!"
+        step_hint = f"이 세 물건의 총 가격은 **{total_price:,}원** 입니다. 이전 단계에서 유도한 정보를 이용해 파랑 보너스를 계산하세요."
 
     else:
         return [], 0, "", 0, "오류"
@@ -90,8 +101,11 @@ def start_new_question():
 
 def price_prediction_game():
     st.set_page_config(layout="centered")
-    st.title("💰 가격 추론 훈련 AI")
-    st.markdown("#### 빨강 → 노랑 → 파랑 순서로 가격 규칙을 유추하세요!")
+
+    # --- 제목 및 설명 ---
+    st.title("💰 가격 추론 훈련 AI (회귀 분석)")
+    st.markdown("#### 추론 능력을 길러줘!")
+    st.markdown(f"##### 단계별로 숨겨진 가격 규칙을 유추해 보세요. 총 {TARGET_SCORE}단계를 통과하면 승리합니다.")
     st.markdown("---")
 
     # 초기화
@@ -113,7 +127,7 @@ def price_prediction_game():
         return
 
     # 예시 표시
-    st.subheader(f"Step {st.session_state.step} / {TARGET_SCORE}")
+    st.subheader(f"🧠 Step {st.session_state.step} / {TARGET_SCORE} : 규칙 유추 훈련")
     df = pd.DataFrame([{
         "물건": f"예시 {i+1}",
         "크기 점수": ex['size'],
@@ -122,6 +136,7 @@ def price_prediction_game():
     } for i, ex in enumerate(st.session_state.examples)])
     st.dataframe(df, hide_index=True)
     st.markdown(f"**힌트:** {st.session_state.step_hint}")
+    st.markdown(f"**기본 공식:** 가격 = (크기 점수 × ?원) + (색깔별 보너스)")
     st.markdown("---")
 
     # 문제 표시
@@ -143,7 +158,7 @@ def price_prediction_game():
         correct = (guess == answer)
         price, bonus = calculate_price(st.session_state.problem_size, st.session_state.problem_color)
         color = st.session_state.problem_color
-        formula = f"({st.session_state.problem_size} x {SCALE_FACTOR}) + {COLOR_BONUS[color]:,} = {answer:,}원"
+        formula = f"({st.session_state.problem_size} × {SCALE_FACTOR}) + {COLOR_BONUS[color]:,} = {answer:,}원"
         if correct:
             st.success(f"정답입니다! ✅\n\n{formula}")
             st.session_state.score += 1
@@ -163,7 +178,7 @@ def price_prediction_game():
                 st.rerun()
 
     st.markdown("---")
-    st.info(f"현재 점수: {st.session_state.score} / {TARGET_SCORE}")
+    st.info(f"🏆 현재 점수: {st.session_state.score} / {TARGET_SCORE}")
 
 if __name__ == "__main__":
     price_prediction_game()
