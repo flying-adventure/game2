@@ -94,7 +94,7 @@ def price_prediction_game():
     if st.session_state.game_state == 'victory':
         st.success("🎉 모든 단계를 완료했습니다!")
         st.header("아하! 크기당 100원, 빨강은 +10원, 파랑은 +5원이군요!")
-        st.markdown("규칙을 완벽하게 알아냈어요!")
+        st.markdown("제가 규칙을 완벽하게 알아낼 수 있도록 도와줘서 고마워요!")
         if st.button("🔄 다시 하기"):
             for k in list(st.session_state.keys()):
                 del st.session_state[k]
@@ -173,5 +173,6 @@ def price_prediction_game():
 # ===== 실행 =====
 if __name__ == "__main__":
     price_prediction_game()
+
 
 
