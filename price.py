@@ -3,10 +3,10 @@ import random
 import pandas as pd
 
 # --- 전역 상수 ---
-TARGET_SCORE = 3  # 총 3단계
-SCALE_FACTOR = 800  # 크기 가중치
+TARGET_SCORE = 3
+SCALE_FACTOR = 800
 
-# 색깔별 보너스 정의
+# 색깔별 보너스
 COLOR_BONUS = {
     '🔴 빨강': 1500,
     '🟡 노랑': 500,
@@ -27,21 +27,21 @@ def calculate_price(size, colors):
 def generate_step_data(step):
     """단계별 문제 생성"""
     examples = []
-    all_sizes = list(range(4, 11))
+    total_price = None
 
     if step == 1:
         # 빨강 보너스 및 크기 가중치 추론
         required_color = '🔴 빨강'
-        example_sizes = random.sample(all_sizes, 3)
+        example_sizes = random.sample(range(4, 11), 3)
         for s in example_sizes:
             price, _ = calculate_price(s, required_color)
             examples.append({'size': s, 'color': required_color, 'price': price})
-        problem_size = random.choice([x for x in all_sizes if x not in example_sizes])
+        problem_size = random.choice([x for x in range(4, 11) if x not in example_sizes])
         problem_color = required_color
         step_hint = "빨간색 물건만 보고 '크기 점수 가중치'와 '빨강 보너스'를 찾아내세요."
 
     elif step == 2:
-        # 노랑 보너스 추론 (총 가격 제공)
+        # 노랑 보너스 추론
         required_color = '🟡 노랑'
         size_yellow = 7
         size_red1 = 7
@@ -52,13 +52,13 @@ def generate_step_data(step):
         red2_price, _ = calculate_price(size_red2, '🔴 빨강')
         total_price = red1_price + yellow_price + red2_price
 
-        examples.append({'size': size_red1, 'color': '🔴 빨강', 'price': f"{red1_price:,}원"})
+        examples.append({'size': size_red1, 'color': '🔴 빨강', 'price': red1_price})
         examples.append({'size': size_yellow, 'color': '🟡 노랑', 'price': "?"})
-        examples.append({'size': size_red2, 'color': '🔴 빨강', 'price': f"{red2_price:,}원"})
+        examples.append({'size': size_red2, 'color': '🔴 빨강', 'price': red2_price})
 
         problem_size = size_yellow
         problem_color = required_color
-        step_hint = f"이 세 물건의 총 가격은 **{total_price:,}원** 입니다. 1단계에서 찾은 크기 가중치와 빨강 보너스를 이용해 노랑 보너스를 계산하세요."
+        step_hint = "1단계에서 찾은 정보를 이용해 노랑 보너스를 계산하세요."
 
     elif step == 3:
         # 파랑 보너스 추론
@@ -72,30 +72,31 @@ def generate_step_data(step):
         blue_price, _ = calculate_price(size_blue, '🔵 파랑')
         total_price = red_price + yellow_price + blue_price
 
-        examples.append({'size': size_red, 'color': '🔴 빨강', 'price': f"{red_price:,}원"})
-        examples.append({'size': size_yellow, 'color': '🟡 노랑', 'price': f"{yellow_price:,}원"})
+        examples.append({'size': size_red, 'color': '🔴 빨강', 'price': red_price})
+        examples.append({'size': size_yellow, 'color': '🟡 노랑', 'price': yellow_price})
         examples.append({'size': size_blue, 'color': '🔵 파랑', 'price': "?"})
 
         problem_size = size_blue
         problem_color = required_color
-        step_hint = f"이 세 물건의 총 가격은 **{total_price:,}원** 입니다. 이전 단계에서 유도한 정보를 이용해 파랑 보너스를 계산하세요."
+        step_hint = "이전 단계의 정보를 이용해 파랑 보너스를 계산하세요."
 
     else:
-        return [], 0, "", 0, "오류"
+        return [], 0, "", 0, "오류", None
 
     problem_price, _ = calculate_price(problem_size, problem_color)
-    return examples, problem_size, problem_color, problem_price, step_hint
+    return examples, problem_size, problem_color, problem_price, step_hint, total_price
 
 def start_new_question():
     """문제 새로 생성"""
     step = st.session_state.get('step', 1)
-    examples, size, color, answer, hint = generate_step_data(step)
+    examples, size, color, answer, hint, total = generate_step_data(step)
     st.session_state.examples = examples
     st.session_state.correct_answer = answer
     st.session_state.problem_size = size
     st.session_state.problem_color = color
     st.session_state.step_hint = hint
     st.session_state.display_color = color
+    st.session_state.total_price = total
     st.session_state.game_state = 'playing'
     st.session_state.input_key = random.random()
 
@@ -128,12 +129,24 @@ def price_prediction_game():
 
     # 예시 표시
     st.subheader(f"🧠 Step {st.session_state.step} / {TARGET_SCORE} : 규칙 유추 훈련")
+
     df = pd.DataFrame([{
         "물건": f"예시 {i+1}",
         "크기 점수": ex['size'],
         "색깔": ex['color'],
-        "가격": ex['price'] if isinstance(ex['price'], str) else f"{ex['price']:,}원"
+        "가격": f"{ex['price']:,}원" if isinstance(ex['price'], (int, float)) else ex['price']
     } for i, ex in enumerate(st.session_state.examples)])
+
+    # 총합 행 추가 (있을 때만)
+    if st.session_state.total_price is not None:
+        total_row = pd.DataFrame([{
+            "물건": "총합",
+            "크기 점수": "",
+            "색깔": "",
+            "가격": f"{st.session_state.total_price:,}원"
+        }])
+        df = pd.concat([df, total_row], ignore_index=True)
+
     st.dataframe(df, hide_index=True)
     st.markdown(f"**힌트:** {st.session_state.step_hint}")
     st.markdown(f"**기본 공식:** 가격 = (크기 점수 × ?원) + (색깔별 보너스)")
