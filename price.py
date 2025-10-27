@@ -83,7 +83,7 @@ def generate_step_data(step):
             problem_size = random.choice(list(size_range)) # 안전 장치
             
         problem_color = required_color
-        step_hint = f"크기 가중치({SCALE_FACTOR}원)와 빨강 보너스를 이용해 '노랑 보너스'를 찾아내세요."
+        step_hint = f"크기 가중치({SCALE_FACTOR}원)를 이용해 '노랑 보너스'를 찾아내세요."
 
     elif step == 3:
         # 목표: 파랑 보너스 찾기
@@ -106,7 +106,7 @@ def generate_step_data(step):
             problem_size = random.choice(list(size_range)) # 안전 장치
 
         problem_color = required_color
-        step_hint = "크기 가중치와 이미 알고 있는 색깔 보너스를 활용해 '파랑 보너스'를 찾아내세요."
+        step_hint = "크기 가중치를 활용해 '파랑 보너스'를 찾아내세요."
         
     elif step == 4:
         # 목표: 두 가지 색깔 혼합 문제 (최종 점검)
@@ -325,5 +325,6 @@ def price_prediction_game():
 
 if __name__ == "__main__":
     price_prediction_game()
+
 
 
