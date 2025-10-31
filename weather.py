@@ -195,7 +195,7 @@ def pattern_robot_web_game():
         
         # 힌트 문구 출력 위치를 명확히 했습니다.
         st.warning("""
-        **💡 힌트 문장:** 붉은 용암빛이 성문의 돌 틈새로 새어 나온다.
+        **💡 힌트 문장: 용암으로 둘러져있다.
         """)
         
         # 힌트 문구가 출력된 후, 안내 문구를 추가합니다.
@@ -211,4 +211,5 @@ def pattern_robot_web_game():
 
 if __name__ == "__main__":
     pattern_robot_web_game()
+
 
